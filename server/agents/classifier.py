@@ -20,42 +20,41 @@ def classify_message(message: str) -> Classification:
     Enhanced classifier that detects missing city and asks for it.
     Returns structured output + special flag if city is unknown.
     """
-    prompt = f"""
-You are an expert multilingual refugee message classifier.
+    prompt = CLASSIFIER_PROMPT = f"""
+You are an expert refugee message classifier. Analyze ONLY the current message. Never use history.
 
-User message (any language/script):  
-"{message}"
+MESSAGE: "{message}"
 
-TASKS — BE VERY STRICT:
+RULES (NEVER BREAK):
 
-1. CITY DETECTION (MOST IMPORTANT):
-   - ONLY accept a real city name if the user explicitly mentions it
-     Examples that count as city:
-       "मुंबई", "Mumbai", "Delhi", "वॉर्सॉ", "Warszawa", "Berlin", "Kyiv", "Lviv" → use exact
-   - If user only mentions a COUNTRY (even in any language):
-       India, Poland, Germany, USA, Ukraine, Turkey, France, etc. → city = "Unknown"
-   - "मी भारतात आहे", "أنا في بولندا", "I'm in Poland" → city = "Unknown"
+1. CITY:
+   - Return city only if explicitly written in THIS message
+   - Use EXACT spelling the user typed (Mumbai, मुंबई, mumbai, etc.)
+   - "i am in mumbai" → city = "mumbai"
+   - "main mumbai ja raha hun" → city = "mumbai"
+   - Only country → "Unknown"
 
-2. Language code (ISO 639-1): hi, mr, ar, ur, fa, uk, ru, pl, en, etc.
+2. LANGUAGE (MOST IMPORTANT):
+   - Detect the language the user actually wrote in (ISO 639-1)
+   - Script first, then vocabulary:
+        • Any Devanagari → "hi"
+        • Romanised Hindi ("main", "mein", "hu", "hoon", "mumbai ja raha") → "hi"
+        • Pure English ("i am in mumbai", "help me") → "en"
+        • Arabic script → "ar"
+        • Cyrillic → "uk" or "ru"
+   - City names do NOT affect language detection
 
-3. Urgency: low, medium, high, critical
+3. urgency: low | medium | high | critical
+4. needs: shelter, food, medical, registration, children, elderly, safety
 
-4. Needs: shelter, food, medical, registration, children, elderly, safety
-
-RULES — NEVER BREAK THESE:
-- If no city is mentioned → city = "Unknown", city_unknown = true
-- If only country is mentioned → city = "Unknown", city_unknown = true
-- If specific city mentioned → city = correct name, city_unknown = false
-- Never assume or guess a city from country
-
-Return ONLY valid JSON. No explanations.
+Return ONLY valid JSON:
 
 {{
   "city": "Unknown",
-  "language": "mr",
-  "urgency": "high",
-  "needs": ["shelter"],
-  "city_unknown": true
+  "city_unknown": true,
+  "language": "en",
+  "urgency": "low",
+  "needs": []
 }}
 """
 

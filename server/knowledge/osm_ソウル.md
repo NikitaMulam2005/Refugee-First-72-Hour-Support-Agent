@@ -1,5 +1,5 @@
-# Emergency Resources in Delhi
-_Updated: 2025-11-24 20:22 UTC_
+# Emergency Resources in ソウル
+_Updated: 2025-11-25 07:02 UTC_
 
 No specific refugee facilities found in OpenStreetMap yet.
 
