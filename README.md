@@ -78,4 +78,3 @@ refugee-first/
 
 This project provides information only—no legal advice or government process automation. Strictly for humanitarian support of refugees and displaced persons.
 
-```
